@@ -30,6 +30,7 @@ for i in range(dim_lie_algebra):
         j += 1
 number_basis_elements = len(basis)
 
+
 # Compute the commutator of each pair of basis elements.
 # Reshape the basis vectors as arrays and create a matrix with columns the basis vectors 
 # to be solved as a system of linear equations
@@ -56,7 +57,7 @@ U, s, V = linalg.svd(matrix_for_linear_system, full_matrices=False)
 sigma_inv = diag(hstack([1/s[:r], zeros(dim-r)]))
 A_plus = dot(V, dot(sigma_inv, U.T))
 
-# Obtain the coefficients of the Casimir element
+# Obtain the coefficients for writing the commutators as a linear combination of the basis elements
 casimir_coefficients = []
 for j in range(number_commutators):
     casimir_coefficients.append(dot(A_plus, commutator[j]))
