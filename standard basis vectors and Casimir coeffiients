@@ -47,7 +47,6 @@ commutator = asarray(commutator)
 number_commutators = len(commutator)
 basis_as_vectors = asarray(basis_as_vectors)
 matrix_for_linear_system = asarray(matrix_columns_basis).T
-print(matrix_for_linear_system)
 
 
 # SVD decomposition for the matrix consisting of the basis vectors as columns
@@ -62,4 +61,3 @@ casimir_coefficients = []
 for j in range(number_commutators):
     casimir_coefficients.append(dot(A_plus, commutator[j]))
 casimir_coefficients = asarray(casimir_coefficients)
-print(linalg.norm(casimir_coefficients, inf))
