@@ -1,0 +1,65 @@
+from numpy import *
+# Compute the coefficients of the Casimir element for a given Lie algebra of type sl_{n}
+
+# Input the dimension of sl_{n}
+dim_lie_algebra = input("Input the dimension of the Lie algebra ")
+
+
+# Initiate a list to store the basis elements for the traceless matrices
+res = zeros((dim_lie_algebra, dim_lie_algebra), int)
+basis = []
+
+
+# Loop for e_{ij} - basis elements with 0s in diagonals
+for i in range(dim_lie_algebra):
+    for j in range(dim_lie_algebra):
+        if j!=i:
+            res[i,j] = 1
+            basis.append(res)
+            res = zeros((dim_lie_algebra, dim_lie_algebra), int)
+        j += 1
+
+# Loop for h_{ij} - basis elements with 1 and -1 in the diagonal
+for i in range(dim_lie_algebra):
+    for j in range(dim_lie_algebra-1):
+        if j==i:
+            res[i,j] = 1
+            res[i+1,j+1] = -1
+            basis.append(res)
+            res = zeros((dim_lie_algebra, dim_lie_algebra), int)
+        j += 1
+number_basis_elements = len(basis)
+
+# Compute the commutator of each pair of basis elements.
+# Reshape the basis vectors as arrays and create a matrix with columns the basis vectors 
+# to be solved as a system of linear equations
+basis_as_vectors = []
+commutator_il = zeros((dim_lie_algebra, dim_lie_algebra), int)
+commutator = []
+matrix_columns_basis = []
+for i in range(number_basis_elements):
+    basis_as_vectors.append(array(basis[i]).ravel())
+    for l in range(number_basis_elements):
+        commutator_il = dot(basis[i], basis[l]) - dot(basis[l], basis[i])
+        commutator.append(asarray(commutator_il).ravel())
+    matrix_columns_basis.append(concatenate(basis[i]))
+commutator = asarray(commutator)
+number_commutators = len(commutator)
+basis_as_vectors = asarray(basis_as_vectors)
+matrix_for_linear_system = asarray(matrix_columns_basis).T
+print(matrix_for_linear_system)
+
+
+# SVD decomposition for the matrix consisting of the basis vectors as columns
+r = linalg.matrix_rank(matrix_for_linear_system)
+dim = linalg.matrix_rank(matrix_for_linear_system)
+U, s, V = linalg.svd(matrix_for_linear_system, full_matrices=False)
+sigma_inv = diag(hstack([1/s[:r], zeros(dim-r)]))
+A_plus = dot(V, dot(sigma_inv, U.T))
+
+# Obtain the coefficients of the Casimir element
+casimir_coefficients = []
+for j in range(number_commutators):
+    casimir_coefficients.append(dot(A_plus, commutator[j]))
+casimir_coefficients = asarray(casimir_coefficients)
+print(linalg.norm(casimir_coefficients, inf))
